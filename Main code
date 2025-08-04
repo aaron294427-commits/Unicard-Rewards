@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>回饋金計算器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            text-align: center;
+        }
+        input[type="number"] {
+            font-size: 1.2em;
+            padding: 5px;
+            width: 80%;
+            margin-bottom: 20px;
+        }
+        .result {
+            font-size: 1.5em;
+            margin-top: 15px;
+        }
+        .black { color: black; }
+        .blue { color: blue; }
+        .red { color: red; }
+        .green { color: green; }
+        .desktop-layout {
+            width: 50%;
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <input type="number" id="amount" placeholder="輸入消費金額">
+        <div class="result black" id="displayAmount"></div>
+        <div class="result blue" id="reward"></div>
+        <div class="result" id="diff"></div>
+    </div>
+
+    <script>
+        function calculateRewards(amount) {
+            const rewardA = Math.round(amount * 0.003);
+            const rewardB = Math.round(amount * 0.007);
+            const rewardC = Math.min(Math.round(amount * 0.025), 500);
+            return rewardA + rewardB + rewardC;
+        }
+
+        function idealRewards(amount) {
+            return amount * (0.003 + 0.007 + 0.025);
+        }
+
+        function updateLayout() {
+            const isMobile = /iPhone|Android|Mobile|iPad/i.test(navigator.userAgent);
+            const container = document.getElementById('container');
+
+            if (!isMobile) {
+                container.classList.add('desktop-layout');
+            }
+        }
+
+        document.getElementById('amount').addEventListener('input', function() {
+            const amount = parseFloat(this.value) || 0;
+            const actualReward = calculateRewards(amount);
+            const idealReward = idealRewards(amount);
+            const diff = (actualReward - idealReward).toFixed(1);
+
+            document.getElementById('displayAmount').textContent = `消費金額：${amount} 元`;
+            document.getElementById('reward').textContent = `回饋金額：${actualReward} 元`;
+
+            const diffElement = document.getElementById('diff');
+            diffElement.textContent = `差額：${diff} 元`;
+
+            if (diff < 0) {
+                diffElement.className = 'result red';
+            } else if (diff > 0) {
+                diffElement.className = 'result green';
+            } else {
+                diffElement.className = 'result black';
+            }
+        });
+
+        window.onload = updateLayout;
+    </script>
+</body>
+</html>
